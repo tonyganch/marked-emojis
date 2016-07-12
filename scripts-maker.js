@@ -33,7 +33,7 @@ function getFilenameFromUrl(url) {
 function addDataToPreprocessor(emoji, filename) {
   var src = escape(__dirname + '/emojis/' + filename);
   var string = '     s/:' + emoji +
-      ':/<img style="height:20px;vertical-align:middle;" src="' + src + '">/;';
+      ':/<img style="height:20px;vertical-align:middle;" src="' + src + '">/g;';
   preprocessorData.push(string);
 }
 
