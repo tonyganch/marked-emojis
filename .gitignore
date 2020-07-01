@@ -1,4 +1,3 @@
-downloader.sh
 emojis.json
-preprocessor.sh
+preprocessor.sed
 emojis
