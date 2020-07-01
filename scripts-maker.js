@@ -1,43 +1,42 @@
 #!/usr/bin/env node
 
-var fs = require('fs');
-var emojis = require('./emojis.json');
+// Requires
+////////////////////////////////////////////////////////////////////
 
-var PREPROCESSOR_FILE = 'preprocessor.sh';
-var DOWNLOADER_FILE = 'downloader.sh';
+const fs = require("fs");
+const emojis = require("./emojis.json");
 
-var preprocessorData = ['#!/bin/bash', 'sed \''];
-var downloaderData = ['#!/bin/bash', 'rm -rf emojis', 'mkdir emojis'];
+// Working variables
+////////////////////////////////////////////////////////////////////
 
-for (var emoji in emojis) {
-  var url = emojis[emoji];
-  var filename = getFilenameFromUrl(url);
+const PREPROCESSOR_FILE = "preprocessor.sed";
+const preprocessorData = [];
 
-  addDataToPreprocessor(emoji, filename);
-  addDataToDownloader(url, filename);
-}
-
-preprocessorData.push('    \'');
-
-fs.writeFileSync(PREPROCESSOR_FILE, preprocessorData.join('\n'));
-fs.writeFileSync(DOWNLOADER_FILE, downloaderData.join('\n'));
+// Helper functions
+////////////////////////////////////////////////////////////////////
 
 function escape(str) {
-  return str.replace(/\//g, '\\/');
+  return str.replace(/\//g, "\\/");
 }
 
-function getFilenameFromUrl(url) {
-  return url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('?'));
-}
-
-function addDataToPreprocessor(emoji, filename) {
-  var src = escape(__dirname + '/emojis/' + filename);
-  var string = '     s/:' + emoji +
-      ':/<img style="height:20px;vertical-align:middle;" src="' + src + '">/g;';
+function addDataToPreprocessor(emoji, url) {
+  var src = escape(url);
+  var string =
+    "s/:" +
+    emoji +
+    ':/<img style="height:1em;vertical-align:middle;" src="' +
+    src +
+    '">/g;';
   preprocessorData.push(string);
 }
 
-function addDataToDownloader(url, filename) {
-  var string = 'curl ' + url + ' > emojis/' + filename;
-  downloaderData.push(string);
+// Execute script
+////////////////////////////////////////////////////////////////////
+
+for (var emoji in emojis) {
+  var url = emojis[emoji];
+
+  addDataToPreprocessor(emoji, url);
 }
+
+fs.writeFileSync(PREPROCESSOR_FILE, preprocessorData.join("\n"));
